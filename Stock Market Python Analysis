@@ -1,0 +1,196 @@
+#Functions 
+#Plot Closing Price Graph
+def get_cp_graph (stock_name, stock_data):
+  plt.figure(figsize=(12, 6))
+  stock_data['Close'].plot()
+  plt.title(f"{stock_name} Adjusted Closing Price")
+  plt.xlabel('Date')
+  plt.ylabel('Price (USD)')
+  plt.grid()
+  plt.savefig(f"{stock_name}_cp_graph.png")
+  plt.show()
+
+
+#Percent Change
+def pdiff(stock_ticker, start_date, end_date):
+  ticker = yf.Ticker(stock_ticker)
+  stock_data = ticker.history(start=start_date, end=end_date)
+  stock_1 = stock_data.iloc[0,3]
+  stock_2 = stock_data.iloc[-1,3]
+  stock_pdiff=(stock_1-stock_2)/stock_2
+  print(stock_pdiff)
+  return stock_pdiff
+
+start_date = '2024-09-26'
+end_date = '2024-10-14'
+
+#S&P 500 Industry Stocks 
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
+
+ticker_list=["^GSPC", "^GSPE", "^SP500-25", "^SP500-45", "^SP500-60", "^SP500-50"]
+ticker_to_name = {"^GSPC": "S&P 500",
+                  "^GSPE": "S&P 500 Energy Industry",
+                  "^SP500-25": "S&P 500 Consumer Discretionary Industry",
+                  "^SP500-45" : "S&P 500 Technology Industry",
+                  "^SP500-60":"S&P 500 Real Estate",
+                  "^SP500-50":"S&P 500 Communication Services"
+                  }
+stock_price_changes = []
+
+for stock_ticker in ticker_list:
+  stock_name = ticker_to_name [stock_ticker]
+  ticker = yf.Ticker(stock_ticker)
+  stock_data = ticker.history(start=start_date, end=end_date)
+
+  get_cp_graph(stock_name, stock_data)
+
+print(stock_price_changes)
+
+import pandas as pd
+import yfinance as yf
+
+def get_cp(stock_name, start_date, end_date):
+    ticker = yf.Ticker(stock_name)
+    stock_data = ticker.history(start=start_date, end=end_date)
+    return stock_data['Close'].iloc[-1]
+
+names = [
+    "S&P 500",
+    "S&P 500 Energy Industry",
+    "S&P 500 Consumer Discretionary Industry",
+    "S&P 500 Technology Industry",
+    "S&P 500 Real Estate Industry",
+    "S&P 500 Communication Services Industry"
+]
+
+values = [
+    get_cp("^GSPC", start_date, end_date),
+    get_cp("^GSPE", start_date, end_date),
+    get_cp("^SP500-25", start_date, end_date),
+    get_cp("^SP500-45", start_date, end_date),
+    get_cp("^SP500-60", start_date, end_date),
+    get_cp("^SP500-50", start_date, end_date)
+]
+
+# Calculate percentage changes
+percent_changes = [
+    pdiff("^GSPC", start_date, end_date),
+    pdiff("^GSPE", start_date, end_date),
+    pdiff("^SP500-25", start_date, end_date),
+    pdiff("^SP500-45", start_date, end_date),
+    pdiff("^SP500-60", start_date, end_date),
+    pdiff("^SP500-50", start_date, end_date)
+]
+
+# Create a DataFrame with closing prices
+df = pd.DataFrame([], columns=names)
+
+# Add a new row for percentage changes
+df.loc["Latest Closing Price"] = values
+df.loc["Percent Changes"] = percent_changes
+
+
+df
+df.to_csv('industry_table.csv2', index=False)
+
+#index fund table 
+import pandas as pd
+import yfinance as yf
+
+def get_cp(stock_name, start_date, end_date):
+    ticker = yf.Ticker(stock_name)
+    stock_data = ticker.history(start=start_date, end=end_date)
+    return stock_data['Close'].iloc[-1]
+
+names = [
+    "S&P 500",
+    "Dow Jones 20",
+    "Russell 2000",
+    "NASDAQ"
+]
+
+values = [
+    get_cp("^GSPC", start_date, end_date),
+    get_cp("^DJI", start_date, end_date),
+    get_cp("^RUT", start_date, end_date),
+    get_cp("^IXIC", start_date, end_date)
+]
+
+# Calculate percentage changes
+percent_changes = [
+    pdiff("^GSPC", start_date, end_date),
+    pdiff("^DJI", start_date, end_date),
+    pdiff("^RUT", start_date, end_date),
+    pdiff("^IXIC", start_date, end_date)
+]
+
+# Create a DataFrame with closing prices
+df = pd.DataFrame([], columns=names)
+
+# Add a new row for percentage changes
+df.loc["Latest Closing Price"] = values
+df.loc["Percent Changes"] = percent_changes
+
+df
+df.to_csv('indexfunds_table.csv', index=False)
+
+#Index Fund Closing Price Graphs 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
+import yfinance as yf
+from pandas import DataFrame
+
+start_date = '2024-09-26'
+end_date = '2024-10-14'
+
+stock_name_1 = "^GSPC"
+
+stock_name_2 = "^DJI"
+
+stock_name_3 = "^RUT"
+
+stock_name_4 = "^IXIC"
+
+
+# def get_close_price_data(stock_name, start_date, end_date):
+#   ticker_2 = yf.Ticker(stock_name)
+#   stock_data_2 = ticker_2.history(start=start_date, end=end_date)
+#   return stock_data_2['Close']
+
+def get_close_price_data(stock_name, start_date, end_date):
+    ticker = yf.Ticker(stock_name)
+    stock_data = ticker.history(start=start_date, end=end_date)
+    close_prices = stock_data['Close']
+
+     #Normalize the close prices to be between 0 and 1
+    min_price = close_prices.min()
+    max_price = close_prices.max()
+    normalized_close_prices = (close_prices - min_price) / (max_price - min_price)
+
+    return normalized_close_prices
+
+stock_1_cp=get_close_price_data(stock_name_1, start_date, end_date)
+stock_2_cp=get_close_price_data(stock_name_2, start_date, end_date)
+stock_3_cp=get_close_price_data(stock_name_3, start_date, end_date)
+stock_4_cp=get_close_price_data(stock_name_4, start_date, end_date)
+
+
+results1 = DataFrame({'S&P 500': stock_1_cp,
+                      'Dow Jones 20': stock_2_cp,
+                      'Russell 2000': stock_3_cp,
+                      'NASDAQ': stock_4_cp,})
+
+results1.plot(figsize=(12,6))
+#plt.figure(figsize=(12,6))
+plt.legend(loc='upper left')
+plt.xlabel("Date")
+plt.title(f"Index Funds Closing Prices")
+plt.ylabel("Price (USD)")
+plt.show()
+
